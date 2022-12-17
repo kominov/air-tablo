@@ -5,13 +5,22 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    isAdmin: false,
+    currentPage: 'departure',
   },
+
   getters: {
+    isAdmin: ({ isAdmin }) => isAdmin,
+    currentPage: ({ currentPage }) => currentPage,
   },
+
   mutations: {
-  },
-  actions: {
-  },
-  modules: {
+    onSetAdmin(state, isAdmin) {
+      state.isAdmin = isAdmin;
+    },
+
+    onChangePage(state, currentPage) {
+      state.currentPage = currentPage;
+    },
   },
 });
