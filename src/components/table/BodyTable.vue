@@ -3,8 +3,8 @@
   <div
     :class="{'admin': isAdmin}"
     class="body-table__row"
-    :key="`row-${id}`"
-    v-for="(item,id) in infoList">
+    :key="item.id"
+    v-for="item in infoList">
 
     <input
       @blur="onUpdateDb(item)"
@@ -47,16 +47,12 @@ export default {
   watch: {
     list: {
       handler() {
-        this.infoList = this.list;
+        this.infoList = this.list.map((item) => ({ ...item }));
       },
-      deep: true,
+      immediate: true,
     },
   },
   emits: ['onUpdateDb', 'onDelRow'],
-
-  mounted() {
-    this.infoList = [...this.list];
-  },
   props: {
     list: {
       type: Array,
