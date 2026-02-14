@@ -1,9 +1,9 @@
 <template>
   <input
     @input="onSearch"
-    v-model="searchStr"
+    v-model.trim="searchStr"
     class="input__search"
-    placeholder="Введите город или номер рейсп"
+    placeholder="Введите город или номер рейса"
     type="text">
 </template>
 

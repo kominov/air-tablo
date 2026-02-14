@@ -5,69 +5,69 @@
      >
       <input
         placeholder="введите дату"
-        v-model="newRow.date">
+        v-model.trim="newRow.date">
 
       <input
         placeholder="введите время"
-        v-model="newRow.time">
+        v-model.trim="newRow.time">
 
       <input
         placeholder="введите рейс"
-        v-model="newRow.flight_number">
+        v-model.trim="newRow.flight_number">
 
       <input
         placeholder="введите город"
-        v-model="newRow.direction">
+        v-model.trim="newRow.direction">
 
-      <div
+      <button
         class="btn"
-        @click="onAddRow()"
-      >Добавить</div>
+        type="button"
+        :disabled="!isFormValid"
+        @click="onAddRow"
+      >Добавить</button>
     </div>
   </div>
 </template>
 
 <script>
-const initForm = {
+const createInitialForm = () => ({
   date: '',
   time: '',
   direction: '',
   flight_number: '',
-};
+});
+
 export default {
   name: 'AddNewRow',
   data() {
     return {
-      newRow: initForm,
+      newRow: createInitialForm(),
     };
   },
 
   emits: ['onAddRow'],
 
   computed: {
-    onValidateForm() {
-      let isValid = true;
-      Object.entries(this.newRow).forEach(([key, value]) => {
-        if (!value) isValid = false;
-      });
-
-      return isValid;
+    isFormValid() {
+      return Object.values(this.newRow).every((value) => value && value.trim());
     },
   },
 
   methods: {
     onAddRow() {
-      if (this.onValidateForm) {
-        this.$emit('onAddRow', this.newRow);
-        this.clearForm();
+      if (!this.isFormValid) {
+        return;
       }
+
+      this.$emit('onAddRow', {
+        ...this.newRow,
+        flight_number: this.newRow.flight_number.toUpperCase(),
+      });
+      this.clearForm();
     },
 
     clearForm() {
-      this.newRow.date = '';
-      this.newRow.time = '';
-      this.newRow.direction = '';
-      this.newRow.flight_number = '';
+      this.newRow = createInitialForm();
     },
   },
 
@@ -109,6 +109,13 @@ export default {
   & .btn{
     border: 2px solid #0098db;
     color: #0098db;
+    background-color: #fff;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   }
 }
 

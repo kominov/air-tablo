@@ -52,8 +52,8 @@ export default {
   data() {
     return {
       departureList: [],
-      searchList: [],
       searchStr: '',
+      unsubscribeSnapshot: null,
     };
   },
   watch: {
@@ -66,12 +66,16 @@ export default {
     this.setFirebase();
   },
 
+  beforeDestroy() {
+    if (this.unsubscribeSnapshot) {
+      this.unsubscribeSnapshot();
+      this.unsubscribeSnapshot = null;
+    }
+  },
+
   computed: {
     flightsList() {
-      const searchString = this.searchStr.toLowerCase();
-      const list = [...this.departureList];
-
-      return searchHelper(list, searchString);
+      return searchHelper(this.departureList, this.searchStr);
     },
 
     currentPage() {
@@ -85,7 +89,11 @@ export default {
 
   methods: {
     setFirebase() {
-      onSnapshot(collection(db, this.currentPage), (querySnapshot) => {
+      if (this.unsubscribeSnapshot) {
+        this.unsubscribeSnapshot();
+      }
+
+      this.unsubscribeSnapshot = onSnapshot(collection(db, this.currentPage), (querySnapshot) => {
         const arrList = [];
         querySnapshot.forEach((t) => {
           arrList.push({
@@ -103,8 +111,9 @@ export default {
     },
 
     onUpdateDb(newValue) {
-      updateDoc(doc(db, this.currentPage, newValue.id), {
-        ...newValue,
+      const { id, ...payload } = newValue;
+      updateDoc(doc(db, this.currentPage, id), {
+        ...payload,
       });
     },
 
